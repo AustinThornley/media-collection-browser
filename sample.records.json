@@ -1,0 +1,52 @@
+[
+  {
+    "artist": "The Midnight Archive",
+    "album": "Static Bloom",
+    "catalog_number": "MA-1042",
+    "edition": "Transparent blue vinyl",
+    "position": 1,
+    "confidence": 0.94,
+    "reason": "Spine text is clear and the catalog number is readable near the bottom edge.",
+    "crop": 1
+  },
+  {
+    "artist": "June Harbor",
+    "album": "Low Tide Letters",
+    "catalog_number": "",
+    "edition": "",
+    "position": 2,
+    "confidence": 0.73,
+    "reason": "Artist and title are readable, though glare obscures the last few characters.",
+    "crop": 1
+  },
+  {
+    "artist": "North Loop Trio",
+    "album": "Unknown",
+    "catalog_number": "",
+    "edition": "",
+    "position": 3,
+    "confidence": 0.46,
+    "reason": "Artist name appears on a narrow spine, but the album title is hidden by the adjacent sleeve.",
+    "crop": 1
+  },
+  {
+    "artist": "Casa Verde",
+    "album": "Window Garden",
+    "catalog_number": "CV-778",
+    "edition": "",
+    "position": 4,
+    "confidence": 0.88,
+    "reason": "Bright spine clearly shows the album title and a short catalog number.",
+    "crop": 2
+  },
+  {
+    "artist": "Unknown",
+    "album": "Unknown",
+    "catalog_number": "",
+    "edition": "",
+    "position": 5,
+    "confidence": 0.14,
+    "reason": "Plain spine is visible, but no readable text can be identified.",
+    "crop": 2
+  }
+]
