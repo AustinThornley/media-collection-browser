@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { normalizeRecordText } from '../utils/records.js'
 
 /**
  * Provides reactive search filtering over a list of records.
@@ -9,12 +10,12 @@ export function useSearch(records) {
   const query = ref('')
 
   const filtered = computed(() => {
-    const q = query.value.toLowerCase().trim()
+    const q = normalizeRecordText(query.value)
     if (!q) return records
     return records.filter(
       (r) =>
-        r.artist.toLowerCase().includes(q) ||
-        r.album.toLowerCase().includes(q)
+        normalizeRecordText(r.artist).includes(q) ||
+        normalizeRecordText(r.album).includes(q)
     )
   })
 

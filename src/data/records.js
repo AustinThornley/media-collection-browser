@@ -1,4 +1,5 @@
 import rawRecords from '../../records.json'
+import { getRecordKey } from '../utils/records.js'
 
 /**
  * Deduplicates raw records by artist+album key, keeping the highest-confidence
@@ -8,14 +9,18 @@ export function deduplicateRecords(data) {
   const map = new Map()
 
   for (const r of data) {
-    const key = `${r.artist.toLowerCase().trim()}|||${r.album.toLowerCase().trim()}`
+    const key = getRecordKey(r)
     const existing = map.get(key)
-    if (!existing || r.confidence > existing.confidence) {
+    if (!existing || Number(r.confidence) > Number(existing.confidence)) {
       map.set(key, { ...r, _key: key })
     }
   }
 
-  return [...map.values()].sort((a, b) => a.artist.localeCompare(b.artist))
+  return [...map.values()].sort(
+    (a, b) =>
+      a.artist.localeCompare(b.artist) ||
+      a.album.localeCompare(b.album)
+  )
 }
 
 export const records = deduplicateRecords(rawRecords)

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { records } from './data/records.js'
 import { useSearch } from './composables/useSearch.js'
 import { prefetchArtwork } from './composables/useArtwork.js'
@@ -10,6 +10,7 @@ import RecordModal from './components/RecordModal.vue'
 const { query, filtered } = useSearch(records)
 const selectedRecord = ref(null)
 const showConfidence = ref(true)
+let cancelArtworkPrefetch = null
 
 function openRecord(record) {
   selectedRecord.value = record
@@ -21,7 +22,11 @@ function closeRecord() {
 
 // Kick off staggered artwork fetches after mount
 onMounted(() => {
-  prefetchArtwork(records)
+  cancelArtworkPrefetch = prefetchArtwork(records)
+})
+
+onUnmounted(() => {
+  cancelArtworkPrefetch?.()
 })
 </script>
 

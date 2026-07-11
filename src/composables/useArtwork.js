@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { isUnknownValue, normalizeRecordText } from '../utils/records.js'
 
 // Module-level cache so artwork persists across component unmounts
 const cache = reactive({})
@@ -26,7 +27,7 @@ export function useArtwork(key, artist, album) {
 }
 
 async function fetchArtwork(key, artist, album) {
-  if (isUnknown(artist) || isUnknown(album)) {
+  if (isUnknownValue(artist) || isUnknownValue(album)) {
     cache[key].loading = false
     return
   }
@@ -121,35 +122,22 @@ function canUseLocalStorage() {
 }
 
 function findBestResult(results = [], artist, album) {
-  const normalizedArtist = normalize(artist)
-  const normalizedAlbum = normalize(album)
+  const normalizedArtist = normalizeRecordText(artist)
+  const normalizedAlbum = normalizeRecordText(album)
 
   return (
     results.find(
       (result) =>
-        normalize(result.artistName) === normalizedArtist &&
-        normalize(result.collectionName) === normalizedAlbum
+        normalizeRecordText(result.artistName) === normalizedArtist &&
+        normalizeRecordText(result.collectionName) === normalizedAlbum
     ) ||
-    results.find((result) => normalize(result.collectionName) === normalizedAlbum) ||
+    results.find((result) => normalizeRecordText(result.collectionName) === normalizedAlbum) ||
     results[0]
   )
 }
 
 function scaleArtworkUrl(url) {
   return url.replace(/100x100[^.]*\.(jpg|png)$/i, '600x600bb.$1')
-}
-
-function normalize(value = '') {
-  return value
-    .toString()
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
-}
-
-function isUnknown(value = '') {
-  return normalize(value) === 'unknown'
 }
 
 /**
@@ -160,9 +148,11 @@ function isUnknown(value = '') {
  * @param {number} delayMs - Milliseconds between each request (default 130)
  */
 export function prefetchArtwork(records, delayMs = 130) {
-  records.forEach((record, i) => {
+  const timers = records.map((record, i) =>
     setTimeout(() => {
       useArtwork(record._key, record.artist, record.album)
     }, i * delayMs)
-  })
+  )
+
+  return () => timers.forEach(clearTimeout)
 }

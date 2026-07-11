@@ -1,6 +1,11 @@
 <script setup>
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue'
 import { useArtwork } from '../composables/useArtwork.js'
+import {
+  getConfidenceLabel,
+  getConfidenceLevel,
+  getConfidencePercent,
+} from '../utils/records.js'
 
 const props = defineProps({
   record: { type: Object, default: null },
@@ -8,28 +13,19 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const artwork = computed(() =>
-  props.record ? useArtwork(props.record._key, props.record.artist, props.record.album) : { url: null, loading: false }
+const emptyArtwork = { url: null, loading: false }
+const artwork = shallowRef(emptyArtwork)
+
+const confidenceClass = computed(() =>
+  props.record ? getConfidenceLevel(props.record.confidence) : ''
 )
 
-const confidenceClass = computed(() => {
-  if (!props.record) return ''
-  const c = props.record.confidence
-  if (c >= 0.8) return 'high'
-  if (c >= 0.5) return 'mid'
-  return 'low'
-})
-
 const confidencePct = computed(() =>
-  props.record ? `${Math.round(props.record.confidence * 100)}%` : ''
+  props.record ? getConfidencePercent(props.record.confidence) : ''
 )
 
 const confidenceLabel = computed(() => {
-  if (!props.record) return ''
-  const c = props.record.confidence
-  if (c >= 0.8) return 'High confidence'
-  if (c >= 0.5) return 'Medium confidence'
-  return 'Low confidence'
+  return props.record ? getConfidenceLabel(props.record.confidence) : ''
 })
 
 function onKeydown(e) {
@@ -43,6 +39,9 @@ onMounted(() => {
 watch(
   () => props.record,
   (record) => {
+    artwork.value = record
+      ? useArtwork(record._key, record.artist, record.album)
+      : emptyArtwork
     document.body.style.overflow = record ? 'hidden' : ''
   },
   { immediate: true }

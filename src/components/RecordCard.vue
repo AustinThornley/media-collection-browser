@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useArtwork } from '../composables/useArtwork.js'
+import { getConfidenceLevel, getConfidencePercent } from '../utils/records.js'
 
 const props = defineProps({
   record: { type: Object, required: true },
@@ -11,14 +12,8 @@ const emit = defineEmits(['click'])
 
 const artwork = useArtwork(props.record._key, props.record.artist, props.record.album)
 
-const confidenceClass = computed(() => {
-  const c = props.record.confidence
-  if (c >= 0.8) return 'high'
-  if (c >= 0.5) return 'mid'
-  return 'low'
-})
-
-const confidencePct = computed(() => `${Math.round(props.record.confidence * 100)}%`)
+const confidenceClass = computed(() => getConfidenceLevel(props.record.confidence))
+const confidencePct = computed(() => getConfidencePercent(props.record.confidence))
 </script>
 
 <template>
@@ -57,7 +52,7 @@ const confidencePct = computed(() => `${Math.round(props.record.confidence * 100
         v-if="showConfidence"
         class="badge"
         :class="confidenceClass"
-        aria-label="Confidence: {{ confidencePct }}"
+        :aria-label="`Confidence: ${confidencePct}`"
       >
         {{ confidencePct }}
       </span>
