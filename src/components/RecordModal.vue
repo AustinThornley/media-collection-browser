@@ -166,7 +166,7 @@ onUnmounted(() => {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -207,9 +207,9 @@ onUnmounted(() => {
 .modal-art-wrap {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   background: var(--surface-2);
-  max-height: 260px;
+  max-height: min(52vh, 520px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,7 +218,8 @@ onUnmounted(() => {
 .modal-art {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--surface-2);
 }
 
 .modal-art-placeholder {

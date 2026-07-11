@@ -143,17 +143,22 @@ const confidencePct = computed(() => `${Math.round(props.record.confidence * 100
   position: absolute;
   top: 7px;
   right: 7px;
-  padding: 2px 7px;
+  min-width: 44px;
+  padding: 3px 8px;
   border-radius: 20px;
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.2px;
-  backdrop-filter: blur(4px);
+  text-align: center;
+  background: rgba(12, 12, 12, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
 }
 
-.badge.high { background: var(--high-bg); color: var(--high); border: 1px solid rgba(74, 222, 128, 0.3); }
-.badge.mid  { background: var(--mid-bg);  color: var(--mid);  border: 1px solid rgba(250, 204, 21, 0.3); }
-.badge.low  { background: var(--low-bg);  color: var(--low);  border: 1px solid rgba(248, 113, 113, 0.3); }
+.badge.high { color: #7df29d; border-color: rgba(125, 242, 157, 0.7); }
+.badge.mid  { color: #ffe066; border-color: rgba(255, 224, 102, 0.7); }
+.badge.low  { color: #ff9a9a; border-color: rgba(255, 154, 154, 0.7); }
 
 /* Info */
 .info {
