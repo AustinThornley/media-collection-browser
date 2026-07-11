@@ -2,9 +2,8 @@ import { reactive } from 'vue'
 
 // Module-level cache so artwork persists across component unmounts
 const cache = reactive({})
-const STORAGE_KEY = 'media-collection-browser:artwork:v1'
+const STORAGE_KEY = 'media-collection-browser:artwork:v2'
 const HIT_TTL_MS = 1000 * 60 * 60 * 24 * 90
-const MISS_TTL_MS = 1000 * 60 * 60 * 24 * 7
 
 /**
  * Fetches album artwork from the iTunes Search API.
@@ -29,7 +28,6 @@ export function useArtwork(key, artist, album) {
 async function fetchArtwork(key, artist, album) {
   if (isUnknown(artist) || isUnknown(album)) {
     cache[key].loading = false
-    writeStoredArtwork(key, null)
     return
   }
 
@@ -46,23 +44,38 @@ async function fetchArtwork(key, artist, album) {
     const resp = await fetch(`https://itunes.apple.com/search?${params}`)
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = await resp.json()
-    const result = findBestResult(data.results, artist, album)
+    let result = findBestResult(data.results, artist, album)
+
+    if (!result) {
+      result = await fetchFallbackArtwork(artist, album)
+    }
+
     if (result?.artworkUrl100) cache[key].url = scaleArtworkUrl(result.artworkUrl100)
     shouldStore = true
   } catch {
     // Silently fail; placeholder artwork will remain visible.
   } finally {
-    if (shouldStore) writeStoredArtwork(key, cache[key].url)
+    if (shouldStore && cache[key].url) writeStoredArtwork(key, cache[key].url)
     cache[key].loading = false
   }
 }
 
+async function fetchFallbackArtwork(artist, album) {
+  const query = encodeURIComponent(`${artist} ${album}`)
+  const resp = await fetch(
+    `https://itunes.apple.com/search?term=${query}&entity=album&limit=1&media=music`
+  )
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+
+  const data = await resp.json()
+  return data.results?.[0] ?? null
+}
+
 function readStoredArtwork(key) {
   const stored = getStoredArtwork()[key]
-  if (!stored) return null
+  if (!stored?.url) return null
 
-  const ttl = stored.url ? HIT_TTL_MS : MISS_TTL_MS
-  if (Date.now() - stored.savedAt > ttl) {
+  if (Date.now() - stored.savedAt > HIT_TTL_MS) {
     removeStoredArtwork(key)
     return null
   }

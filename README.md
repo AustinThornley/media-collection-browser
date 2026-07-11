@@ -61,10 +61,9 @@ intervals to stay within Apple's published guidance, and results are cached in
 module-level reactive state so re-renders never cause duplicate network calls.
 
 Artwork results are also persisted in `localStorage` under
-`media-collection-browser:artwork:v1`, so reloads avoid repeating the same API
-calls. Found artwork is cached for 90 days. Confirmed misses and unknown records
-are cached for 7 days so placeholder-only records do not get re-requested on
-every visit.
+`media-collection-browser:artwork:v2`, so reloads avoid repeating the same API
+calls. Found artwork is cached for 90 days. Misses are not persisted, which keeps
+temporary API failures from freezing a record into the placeholder state.
 
 Cover Art Archive/MusicBrainz is another strong option for cover provenance, but
 it needs MusicBrainz release or release-group IDs before artwork can be fetched.
